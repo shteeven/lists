@@ -6,7 +6,7 @@
 var myApp = angular.module('listsApp');
 
 
-myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseAuth) {
+myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseAuth, $rootScope) {
   var ref = new Firebase(FB_URI),
     auth = $firebaseAuth(ref);
 
@@ -27,13 +27,25 @@ myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseA
       }
       return d.promise;
     },
-    logIn: function(type, user, password) {
-      auth.$authWithOAuthRedirect(type, function(error) {
-        console.log('here 1');
-        if (error) {
-          console.log("Login Failed!", error);
-        }
-      });
+    logIn: function(type, userName, password) {
+      if (type === 'userName'){
+        ref.authWithPassword({email: userName, password: password}, function(error, authData) {
+          if (error) {console.log("Login Failed!", error);}
+        });
+      } else if (type === 'newUserName') {
+        ref.createUser({email: userName, password: password}, function(error, userData) {
+          if (error) {console.log("Error creating user:", error);}
+        })
+      } else {
+        auth.$authWithOAuthRedirect(type, function(error) {if (error) {console.log("Login Failed!", error);}});
+      }
+
+    },
+    logOut: function(){
+      ref.unauth();
+    },
+    authObj: function(){
+      return auth;
     }
   };
   return service;

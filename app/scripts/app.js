@@ -42,36 +42,21 @@ var myApp = angular
 
 myApp.constant('FB_URI', 'https://fiery-torch-1810.firebaseIO.com/');
 
-myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', '$http', 'FB_URI',
-  function($scope, $location, FBUserService, $http, FB_URI){
+myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', '$http', '$rootScope', 'FB_URI', '$firebaseAuth', function($scope, $location, FBUserService, $http, $rootScope, FB_URI, $firebaseAuth){
   $scope.authWaiting = true;
-  var ref = new Firebase(FB_URI);
+  FBUserService.currentUser();
 
-
-    FBUserService.currentUser().then(function(s){
-      if (s){
-        $scope.user = s;
-        log(s);
-        $scope.authWaiting = false;
-      } else {$scope.authWaiting = false;}
-    }, function(e){
-      console.log(e);
-    });
+  var authObj = FBUserService.authObj();
+  authObj.$onAuth(function(authData) {
+    $scope.user = authData;
+  });
 
   function signIn(type, email, password){
     FBUserService.logIn(type);
   }
-  function disconnectUser(access_token) {
-    var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token + '&callback=JSON_CALLBACK';
-    $http.jsonp(revokeUrl)
-      .success( function(nullResponse) {
-        log('here');
-        $scope.user = undefined;})
-      .error(function(err) {console.log(err);});
-  }
   function signOut(){
-    ref.unauth();
-    disconnectUser($scope.user.google.accessToken);
+    FBUserService.signOut();
+    $scope.user = undefined;
   }
   function isActive(viewLocation) {
     return (viewLocation === $location.path());
@@ -84,7 +69,6 @@ myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', '$http', 'F
   $scope.log = log;
   $scope.isActive = isActive;
   $scope.signOut = signOut;
-
 
 }]);
 
