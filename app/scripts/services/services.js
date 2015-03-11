@@ -3,12 +3,12 @@
  * Created by Shtav on 3/7/15.
  */
 
-var myApp = angular.module('listsApp');
+var app = angular.module('listsApp');
 
 
-myApp.factory('FBUserService', function($q, FB_URI, $firebase, $firebaseAuth) {
-  var ref = new Firebase(FB_URI),
-    auth = $firebaseAuth(ref);
+app.factory('UserFBService', function($q, $rootScope) {
+  var ref = $rootScope.ref,
+    auth = $rootScope.auth;
 
   var service = {
     _user: null,
@@ -51,8 +51,9 @@ myApp.factory('FBUserService', function($q, FB_URI, $firebase, $firebaseAuth) {
   return service;
 });
 
-app.factory('FBListsService', function($q, FB_URI, $firebase, FBUserService) {
-  var ref = new Firebase(FB_URI);
+app.factory('ListsFBService', function($q, $rootScope) {
+  var ref = $rootScope.ref,
+    auth = $rootScope.auth;
 
   var service = {
     _user: null,

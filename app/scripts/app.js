@@ -8,7 +8,7 @@
  *
  * Main module of the application.
  */
-var myApp = angular
+var app = angular
   .module('listsApp', [
     'ngAnimate',
     'ngAria',
@@ -20,8 +20,9 @@ var myApp = angular
     'ngTouch',
     'firebase',
     'ui.router'
-  ])
-  .config(function ($routeProvider) {
+  ]);
+
+app.config(function ($routeProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -40,35 +41,11 @@ var myApp = angular
       });
   });
 
-myApp.constant('FB_URI', 'https://fiery-torch-1810.firebaseIO.com/');
+app.constant('FB_URI', 'https://fiery-torch-1810.firebaseIO.com/');
 
-myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', function($scope, $location, FBUserService){
-  $scope.authWaiting = true;
-  FBUserService.currentUser();
-
-  var authObj = FBUserService.authObj();
-  authObj.$onAuth(function(authData) {
-    $scope.user = authData;
-  });
-
-  function signIn(type, email, password){
-    FBUserService.logIn(type);
-  }
-  function signOut(){
-    FBUserService.signOut();
-    $scope.user = undefined;
-  }
-  function isActive(viewLocation) {
-    return (viewLocation === $location.path());
-  }
-  function log(m){
-    console.log(m);
-  }
-  $scope.signIn = signIn;
-  $scope.log = log;
-  $scope.isActive = isActive;
-  $scope.signOut = signOut;
-
+app.run(['$rootScope', '$firebase', '$firebaseAuth', 'FB_URI', function ($rootScope, $firebase, $firebaseAuth, FB_URI) {
+  $rootScope.ref = new Firebase(FB_URI);
+  $rootScope.auth = $firebaseAuth($rootScope.ref);
 }]);
 
 

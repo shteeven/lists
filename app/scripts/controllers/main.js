@@ -8,7 +8,7 @@
  * Controller of the listsApp
  */
 angular.module('listsApp')
-  .controller('MainCtrl', function ($scope, FBUserService) {
+  .controller('MainCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
