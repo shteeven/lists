@@ -6,7 +6,7 @@
 var myApp = angular.module('listsApp');
 
 
-myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseAuth, $rootScope) {
+myApp.factory('FBUserService', function($q, FB_URI, $firebase, $firebaseAuth) {
   var ref = new Firebase(FB_URI),
     auth = $firebaseAuth(ref);
 
@@ -41,7 +41,7 @@ myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseA
       }
 
     },
-    logOut: function(){
+    signOut: function(){
       ref.unauth();
     },
     authObj: function(){
@@ -51,32 +51,45 @@ myApp.factory('FBUserService', function($q, $http, FB_URI, $firebase, $firebaseA
   return service;
 });
 
-myApp.factory('firebaseService', function($q, $http) {
+app.factory('FBListsService', function($q, FB_URI, $firebase, FBUserService) {
+  var ref = new Firebase(FB_URI);
+
   var service = {
     _user: null,
-    setCurrentUser: function(e, s) {
-      if (s && !e) {
-        return service.currentUser();
-      } else {
-        var d = $q.defer();
-        d.reject(u.error);
-        return d.promise;
-      }
-    },
     currentUser: function() {
       var d = $q.defer();
       if (service._user) {
         d.resolve(service._user);
       } else {
-        var authData = ref.getAuth();
+        var authData = auth.$getAuth();
         if (authData) {
-          console.log("User " + authData.uid + " is logged in with " + authData.provider);
+          service._user = authData;
+          d.resolve(service._user);
         } else {
-          console.log("User is logged out");
+          d.resolve(service._user);
         }
       }
       return d.promise;
+    },
+    logIn: function(type, user) {
+      if (type === 'userName'){
+        ref.authWithPassword({email: user.name, password: user.password}, function(error, authData) {
+          if (error) {console.log("Login Failed!", error);}
+        });
+      } else if (type === 'newUser') {
+        ref.createUser({email: user.name, password: user.password}, function(error, userData) {
+          if (error) {console.log("Error creating user:", error);}
+        })
+      } else {
+        auth.$authWithOAuthRedirect(type, function(error) {if (error) {console.log("Login Failed!", error);}});
+      }
 
+    },
+    signOut: function(){
+      ref.unauth();
+    },
+    authObj: function(){
+      return auth;
     }
   };
   return service;

@@ -42,7 +42,7 @@ var myApp = angular
 
 myApp.constant('FB_URI', 'https://fiery-torch-1810.firebaseIO.com/');
 
-myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', '$http', '$rootScope', 'FB_URI', '$firebaseAuth', function($scope, $location, FBUserService, $http, $rootScope, FB_URI, $firebaseAuth){
+myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', function($scope, $location, FBUserService){
   $scope.authWaiting = true;
   FBUserService.currentUser();
 
@@ -64,7 +64,6 @@ myApp.controller('AppCtrl', ['$scope', '$location', 'FBUserService', '$http', '$
   function log(m){
     console.log(m);
   }
-
   $scope.signIn = signIn;
   $scope.log = log;
   $scope.isActive = isActive;
