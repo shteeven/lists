@@ -7,11 +7,41 @@
  * # MainCtrl
  * Controller of the listsApp
  */
-angular.module('listsApp')
-  .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+var app = angular.module('listsApp');
+
+app.controller('MainCtrl', ['$scope', 'ListsFBService', function ($scope, ListsFBService) {
+
+  var LFBS = ListsFBService;
+
+  function addItem(item){
+    LFBS.createItem(item);
+  }
+  $scope.ourList = [];
+  $scope.ourObj = {};
+  function getList(){
+    $scope.list = LFBS.getList();
+    $scope.list.$loaded().then(function(x){
+      angular.forEach(x, function(value, key) {
+        $scope.log(value);
+        $scope.log(key);
+        this.push(key + ': ' + value);
+      }, $scope.ourList);
+    });
+  }
+  function getObj(){
+    $scope.obj = LFBS.getObj();
+    $scope.obj.$loaded().then(function(x){
+      angular.forEach(x, function(value, key) {
+        $scope.log(value);
+        $scope.log(key);
+        this.push(key + ': ' + value);
+      }, $scope.ourObj);
+    });
+  }
+
+
+
+  getObj();
+  getList();
+
+  }]);

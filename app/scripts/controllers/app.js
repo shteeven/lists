@@ -4,8 +4,7 @@
  * Created by Shtav on 3/11/15.
  */
 
-var app = angular
-  .module('listsApp');
+var app = angular.module('listsApp');
 
 app.controller('AppCtrl', ['$scope', '$location', 'UserFBService', function($scope, $location, UserFBService){
   $scope.authWaiting = true;

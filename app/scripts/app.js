@@ -45,6 +45,7 @@ app.constant('FB_URI', 'https://fiery-torch-1810.firebaseIO.com/');
 
 app.run(['$rootScope', '$firebase', '$firebaseAuth', 'FB_URI', function ($rootScope, $firebase, $firebaseAuth, FB_URI) {
   $rootScope.ref = new Firebase(FB_URI);
+  $rootScope.listRef = new Firebase(FB_URI+'/lists');
   $rootScope.auth = $firebaseAuth($rootScope.ref);
 }]);
 
